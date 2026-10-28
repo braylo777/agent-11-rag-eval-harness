@@ -1,0 +1,40 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>RAG Eval Harness · Braylo</title><style>:root{--navy:#0d1520;--cream:#efe9dc;--brass:#b39b70;--ink:#16202e;--line:#253246}
+*{box-sizing:border-box}body{margin:0;background:var(--navy);color:var(--cream);font:15px/1.55 system-ui,-apple-system,Segoe UI,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding:40px 20px 56px}
+header .tag{color:var(--brass);letter-spacing:.14em;text-transform:uppercase;font-size:12px;font-weight:600}
+h1{font-family:Georgia,serif;font-weight:500;font-size:34px;margin:6px 0 8px}
+.lead{opacity:.82;max-width:640px;margin:0 0 24px}
+.card{background:var(--ink);border:1px solid var(--line);border-radius:12px;padding:18px;margin:14px 0}
+.card h2{font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--brass);margin:0 0 10px;font-weight:600}
+textarea,input,select{width:100%;font:inherit;color:var(--cream);background:var(--navy);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+textarea:focus,input:focus,select:focus{outline:none;border-color:var(--brass)}
+button{font:inherit;font-weight:600;background:var(--brass);color:var(--navy);border:0;border-radius:8px;padding:10px 18px;cursor:pointer}
+button.ghost{background:transparent;color:var(--cream);border:1px solid var(--line)}button:disabled{opacity:.5;cursor:wait}
+.row{display:flex;gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap}.row>input,.row>select{flex:1}
+.chips{display:flex;flex-wrap:wrap;gap:8px}.chip{font-size:13px;padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--cream);font-weight:400}
+.chip:hover{border-color:var(--brass)}
+.out{white-space:pre-wrap;min-height:48px}.meta{font-size:12px;opacity:.6;margin-top:8px}
+.pill{display:inline-block;font-size:12px;padding:2px 8px;border-radius:999px;background:rgba(179,155,112,.15);color:var(--brass);margin:2px 4px 2px 0}
+pre{background:var(--navy);border:1px solid var(--line);border-radius:8px;padding:12px;overflow:auto;font-size:13px;max-height:360px;margin:0}
+footer{margin-top:28px;font-size:13px;opacity:.65}a{color:var(--brass)}
+table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line)}th{color:var(--brass);font-weight:600}
+</style></head>
+<body><div class="wrap"><header><div class="tag">Project 11 · Agentic AI portfolio</div><h1>RAG Eval Harness</h1>
+<p class="lead">Measures a RAG pipeline the way you would before shipping it: retrieval precision@k, recall@k and MRR against labelled relevant chunks, plus answer faithfulness scored by citation overlap (and an optional LLM judge).</p></header>
+<div class="card"><h2>Retrieval: 20 labelled queries, 22 chunks</h2><div id="ret"><span class="meta">Loading…</span></div><div class="meta">BM25 is computed live in this Worker on every page load. Dense rows were measured offline on CPU with local models (evals/offline_embed.py).</div></div>
+<div class="card"><h2>Faithfulness: 40 labelled answers</h2><div id="faith"><span class="meta">Loading…</span></div></div>
+<div class="card"><h2>Score your own answer</h2><select id="c"></select><div class="row"><input id="a" maxlength="500" placeholder="Type an answer that cites the chunk above…"><button id="go">Score</button><button class="ghost" id="gj">Score + LLM judge</button></div><div id="out" class="out meta"></div></div>
+<footer>Runs on Cloudflare Workers · LLM judge uses free Workers AI and is rate limited · <a href="https://github.com/braylo777/agent-11-rag-eval-harness">Source on GitHub</a></footer></div>
+<script>
+const $=id=>document.getElementById(id);const esc=s=>String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+const cols=["precision@1","precision@3","recall@3","recall@5","mrr"];
+const row=(n,m)=>`<tr><td>${esc(n)}</td>${cols.map(c=>`<td>${m[c]}</td>`).join("")}</tr>`;
+fetch("/api/eval").then(r=>r.json()).then(j=>{let h=`<table><tr><th>Retriever</th>${cols.map(c=>`<th>${c}</th>`).join("")}</tr>`+row("BM25 (live)",j.live_bm25);
+for(const [n,m] of Object.entries(j.offline?.models||{}))h+=row(n+" (offline)",m);$("ret").innerHTML=h+"</table>";const f=j.citation_overlap;
+$("faith").innerHTML=`<table><tr><th>Citation-overlap metric</th><th>Value</th></tr><tr><td>ROC AUC (faithful vs unfaithful)</td><td>${f.auc}</td></tr><tr><td>Accuracy at threshold ${f.threshold}</td><td>${f.accuracy}</td></tr><tr><td>Precision / recall (faithful class)</td><td>${f.precision} / ${f.recall}</td></tr><tr><td>Mean overlap: faithful / unfaithful</td><td>${f.mean_overlap_faithful} / ${f.mean_overlap_unfaithful}</td></tr><tr><td>LLM judge (Workers AI)</td><td>not yet run</td></tr></table>`});
+fetch("/api/data").then(r=>r.json()).then(d=>{$("c").innerHTML=d.chunks.map(c=>`<option value="${c.id}">${c.id}: ${esc(c.text.slice(0,90))}</option>`).join("")});
+async function go(j){const a=$("a").value.trim();if(!a)return;$("out").textContent="Scoring…";
+const r=await fetch("/api/score"+(j?"?judge=1":""),{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({answer:a,cites:[$("c").value]})});const x=await r.json();
+$("out").textContent=x.error?"Error: "+x.error:`Citation overlap: ${x.overlap}${x.overlap>=0.5?" (faithful)":" (likely unfaithful)"}`+(j?(" · LLM judge: "+(x.judge_error?"unavailable ("+x.judge_error+")":x.judge?"SUPPORTED":"UNSUPPORTED")):"")}
+$("go").onclick=()=>go(0);$("gj").onclick=()=>go(1);$("a").onkeydown=e=>{if(e.key==="Enter")go(0)};
+</script></body></html>

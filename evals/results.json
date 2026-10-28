@@ -1,0 +1,438 @@
+{
+  "project": "agent-11-rag-eval-harness",
+  "run_at": "2026-10-28T00:56:33.886Z",
+  "dataset": {
+    "chunks": 22,
+    "queries": 20,
+    "answers": 40
+  },
+  "retrieval": {
+    "bm25": {
+      "n": 20,
+      "precision@1": 0.9,
+      "recall@1": 0.875,
+      "precision@3": 0.35,
+      "recall@3": 1,
+      "precision@5": 0.21,
+      "recall@5": 1,
+      "mrr": 0.95
+    },
+    "all-MiniLM-L6-v2": {
+      "n": 20,
+      "precision@1": 0.9,
+      "recall@1": 0.875,
+      "precision@3": 0.333,
+      "recall@3": 0.95,
+      "precision@5": 0.2,
+      "recall@5": 0.95,
+      "mrr": 0.93,
+      "query_embed_ms_mean": 5.6,
+      "hf_id": "sentence-transformers/all-MiniLM-L6-v2"
+    },
+    "bge-small-en-v1.5": {
+      "n": 20,
+      "precision@1": 0.9,
+      "recall@1": 0.875,
+      "precision@3": 0.35,
+      "recall@3": 1,
+      "precision@5": 0.21,
+      "recall@5": 1,
+      "mrr": 0.95,
+      "query_embed_ms_mean": 4,
+      "hf_id": "BAAI/bge-small-en-v1.5"
+    },
+    "bge-base-en-v1.5": {
+      "n": 20,
+      "precision@1": 0.9,
+      "recall@1": 0.875,
+      "precision@3": 0.35,
+      "recall@3": 1,
+      "precision@5": 0.21,
+      "recall@5": 1,
+      "mrr": 0.95,
+      "query_embed_ms_mean": 9,
+      "hf_id": "BAAI/bge-base-en-v1.5"
+    }
+  },
+  "faithfulness": {
+    "citation_overlap": {
+      "n": 40,
+      "threshold": 0.5,
+      "auc": 0.989,
+      "accuracy": 0.85,
+      "precision": 0.769,
+      "recall": 1,
+      "mean_overlap_faithful": 0.866,
+      "mean_overlap_unfaithful": 0.379,
+      "rows": [
+        {
+          "qid": "q1",
+          "answer": "ReAct alternates reasoning steps with actions like tool calls and observes each result.",
+          "cites": [
+            "d1c1"
+          ],
+          "label": 1,
+          "overlap": 0.7
+        },
+        {
+          "qid": "q1",
+          "answer": "ReAct trains the model with reinforcement learning on millions of labelled tool traces.",
+          "cites": [
+            "d1c1"
+          ],
+          "label": 0,
+          "overlap": 0.333
+        },
+        {
+          "qid": "q2",
+          "answer": "Its answers are grounded in observations, which reduces hallucination.",
+          "cites": [
+            "d1c2"
+          ],
+          "label": 1,
+          "overlap": 1
+        },
+        {
+          "qid": "q2",
+          "answer": "ReAct removes hallucination entirely by verifying every token against Wikipedia.",
+          "cites": [
+            "d1c2"
+          ],
+          "label": 0,
+          "overlap": 0.111
+        },
+        {
+          "qid": "q3",
+          "answer": "A tool is described with a JSON schema that has a name and parameters.",
+          "cites": [
+            "d2c1"
+          ],
+          "label": 1,
+          "overlap": 0.833
+        },
+        {
+          "qid": "q3",
+          "answer": "Tools are described in plain English paragraphs that the model memorizes during pretraining.",
+          "cites": [
+            "d2c1"
+          ],
+          "label": 0,
+          "overlap": 0.333
+        },
+        {
+          "qid": "q4",
+          "answer": "The application executes the tool and returns the result to the model.",
+          "cites": [
+            "d2c2"
+          ],
+          "label": 1,
+          "overlap": 0.833
+        },
+        {
+          "qid": "q4",
+          "answer": "The model itself executes the tool on its own GPU before replying.",
+          "cites": [
+            "d2c2"
+          ],
+          "label": 0,
+          "overlap": 0.429
+        },
+        {
+          "qid": "q5",
+          "answer": "RAG keeps answers current without retraining.",
+          "cites": [
+            "d3c2"
+          ],
+          "label": 1,
+          "overlap": 0.833
+        },
+        {
+          "qid": "q5",
+          "answer": "RAG keeps answers current by retraining the model every night.",
+          "cites": [
+            "d3c2"
+          ],
+          "label": 0,
+          "overlap": 0.5
+        },
+        {
+          "qid": "q6",
+          "answer": "An embedding model turns text into a vector of numbers.",
+          "cites": [
+            "d4c1"
+          ],
+          "label": 1,
+          "overlap": 1
+        },
+        {
+          "qid": "q6",
+          "answer": "An embedding model converts text into compressed audio waveforms.",
+          "cites": [
+            "d4c1"
+          ],
+          "label": 0,
+          "overlap": 0.429
+        },
+        {
+          "qid": "q7",
+          "answer": "Cosine similarity between vectors is commonly used to rank passages.",
+          "cites": [
+            "d4c2"
+          ],
+          "label": 1,
+          "overlap": 0.75
+        },
+        {
+          "qid": "q7",
+          "answer": "Passages are usually ranked by counting their exclamation marks.",
+          "cites": [
+            "d4c2"
+          ],
+          "label": 0,
+          "overlap": 0.167
+        },
+        {
+          "qid": "q8",
+          "answer": "Chunks are kept self-contained, with overlap, so retrieval returns useful context rather than fragments.",
+          "cites": [
+            "d5c1",
+            "d5c2"
+          ],
+          "label": 1,
+          "overlap": 0.909
+        },
+        {
+          "qid": "q8",
+          "answer": "Documents are chunked so the model can process them without any embedding at all.",
+          "cites": [
+            "d5c1",
+            "d5c2"
+          ],
+          "label": 0,
+          "overlap": 0.25
+        },
+        {
+          "qid": "q9",
+          "answer": "Short-term memory covers the current conversation, while long-term memory holds durable facts about a user.",
+          "cites": [
+            "d6c1"
+          ],
+          "label": 1,
+          "overlap": 0.8
+        },
+        {
+          "qid": "q9",
+          "answer": "Short-term memory is stored on a blockchain and long-term memory is discarded after each session.",
+          "cites": [
+            "d6c1"
+          ],
+          "label": 0,
+          "overlap": 0.545
+        },
+        {
+          "qid": "q10",
+          "answer": "Long-term memory is often stored in a database.",
+          "cites": [
+            "d6c2"
+          ],
+          "label": 1,
+          "overlap": 1
+        },
+        {
+          "qid": "q10",
+          "answer": "Long-term memory is kept only inside the model weights and never in a database.",
+          "cites": [
+            "d6c2"
+          ],
+          "label": 0,
+          "overlap": 0.4
+        },
+        {
+          "qid": "q11",
+          "answer": "Specialized agents can be a planner, a researcher and a writer.",
+          "cites": [
+            "d7c1"
+          ],
+          "label": 1,
+          "overlap": 1
+        },
+        {
+          "qid": "q11",
+          "answer": "Specialized agents are typically a lawyer, an accountant and a pilot.",
+          "cites": [
+            "d7c1"
+          ],
+          "label": 0,
+          "overlap": 0.333
+        },
+        {
+          "qid": "q12",
+          "answer": "An orchestrator routes tasks and passes outputs between agents.",
+          "cites": [
+            "d7c2"
+          ],
+          "label": 1,
+          "overlap": 0.857
+        },
+        {
+          "qid": "q12",
+          "answer": "An orchestrator encrypts every task so other agents cannot read outputs.",
+          "cites": [
+            "d7c2"
+          ],
+          "label": 0,
+          "overlap": 0.375
+        },
+        {
+          "qid": "q13",
+          "answer": "An MCP server exposes tools over JSON-RPC.",
+          "cites": [
+            "d8c2"
+          ],
+          "label": 1,
+          "overlap": 1
+        },
+        {
+          "qid": "q13",
+          "answer": "An MCP server exposes tools over FTP using XML files.",
+          "cites": [
+            "d8c2"
+          ],
+          "label": 0,
+          "overlap": 0.556
+        },
+        {
+          "qid": "q14",
+          "answer": "An MCP server can expose tools, resources and prompts.",
+          "cites": [
+            "d8c2"
+          ],
+          "label": 1,
+          "overlap": 0.833
+        },
+        {
+          "qid": "q14",
+          "answer": "An MCP server can only expose spreadsheets.",
+          "cites": [
+            "d8c2"
+          ],
+          "label": 0,
+          "overlap": 0.4
+        },
+        {
+          "qid": "q15",
+          "answer": "They pause before risky or irreversible actions and wait for a person to approve.",
+          "cites": [
+            "d9c1"
+          ],
+          "label": 1,
+          "overlap": 0.889
+        },
+        {
+          "qid": "q15",
+          "answer": "They act immediately on risky actions and notify a person a week later.",
+          "cites": [
+            "d9c1"
+          ],
+          "label": 0,
+          "overlap": 0.333
+        },
+        {
+          "qid": "q16",
+          "answer": "Approvals are logged for auditing.",
+          "cites": [
+            "d9c2"
+          ],
+          "label": 1,
+          "overlap": 1
+        },
+        {
+          "qid": "q16",
+          "answer": "Approvals are deleted right away so there is no record.",
+          "cites": [
+            "d9c2"
+          ],
+          "label": 0,
+          "overlap": 0.167
+        },
+        {
+          "qid": "q17",
+          "answer": "Production agents need guardrails and observability with traces and logs.",
+          "cites": [
+            "d10c1"
+          ],
+          "label": 1,
+          "overlap": 1
+        },
+        {
+          "qid": "q17",
+          "answer": "Production agents need unlimited budgets and no logging.",
+          "cites": [
+            "d10c1"
+          ],
+          "label": 0,
+          "overlap": 0.667
+        },
+        {
+          "qid": "q18",
+          "answer": "A Worker calls Workers AI through an AI binding.",
+          "cites": [
+            "d11c1"
+          ],
+          "label": 1,
+          "overlap": 0.8
+        },
+        {
+          "qid": "q18",
+          "answer": "A Worker calls Workers AI by emailing the model a request.",
+          "cites": [
+            "d11c1"
+          ],
+          "label": 0,
+          "overlap": 0.5
+        },
+        {
+          "qid": "q19",
+          "answer": "Its free daily allocation means demos need no paid API keys.",
+          "cites": [
+            "d11c2"
+          ],
+          "label": 1,
+          "overlap": 0.778
+        },
+        {
+          "qid": "q19",
+          "answer": "Workers AI requires an enterprise contract and a paid API key for demos.",
+          "cites": [
+            "d11c2"
+          ],
+          "label": 0,
+          "overlap": 0.5
+        },
+        {
+          "qid": "q20",
+          "answer": "Another model can act as a judge that grades outputs against rubrics.",
+          "cites": [
+            "d12c1"
+          ],
+          "label": 1,
+          "overlap": 0.5
+        },
+        {
+          "qid": "q20",
+          "answer": "Agent evaluation is done by asking users to vote on social media.",
+          "cites": [
+            "d12c1"
+          ],
+          "label": 0,
+          "overlap": 0.25
+        }
+      ]
+    },
+    "llm_judge": {
+      "status": "not yet run",
+      "reason": "Workers AI free daily quota exhausted on Oct 27, 2026",
+      "rerun": "BASE=https://agent-11-rag-eval-harness.braylo777.workers.dev node evals/judge.mjs"
+    }
+  }
+}
