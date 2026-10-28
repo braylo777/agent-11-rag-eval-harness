@@ -88,3 +88,18 @@ npx wrangler deploy                        # free tier
 - `POST /api/score` `{answer, cites:[chunkId]}`: citation overlap. Add `?judge=1` to also get the LLM judge's verdict (rate limited to 5 requests/min)
 
 MIT licensed.
+
+## How to run
+
+```bash
+npm install   # dev deps only
+npm test      # 16 offline tests, no Workers AI calls
+npm run dev   # local wrangler dev
+```
+
+## Test results (2026-10-27)
+
+| Suite | Tests | Status |
+|---|---|---|
+| Unit + edge cases (test/edge.test.js added) | 12→16 | all pass |
+| Live demo https://agent-11-rag-eval-harness.braylo777.workers.dev | HTTP 200 | verified 2026-10-27 |
