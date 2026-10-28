@@ -55,7 +55,7 @@ Mean query-embedding time on the box CPU: 5.6 ms for MiniLM, 4.0 ms for BGE-smal
 | Precision / recall, faithful class | **0.769 / 1.00** | not yet run |
 | Mean overlap, faithful / unfaithful | 0.866 / 0.379 | not applicable |
 
-Known weakness: the 6 errors are all unfaithful answers that reuse many source words while changing a fact, such as "Approvals are deleted right away". Token overlap cannot catch a negation or a swapped fact, which is why the LLM judge exists.
+Known weakness: the 6 errors are all unfaithful answers that reuse many source words while changing a fact, such as "RAG keeps answers current by retraining the model every night". Token overlap cannot catch a negation or a swapped fact, which is why the LLM judge exists.
 
 **Not yet run:** the LLM-judge column. The Workers AI free daily allocation was used up on Oct 27, 2026, and the live endpoint currently returns error `4006`. Rerun it after the daily reset:
 ```bash
