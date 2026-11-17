@@ -8,15 +8,15 @@ An **evaluation harness for retrieval-augmented generation (RAG)**. It measures 
 
 ## What it is
 A RAG system can only be improved if you can measure it. This repo is a small, reusable harness:
-- **Labelled set** (`src/data.js`, `evals/data.json`): 22 chunks (the agent-05 knowledge base split into sentences), 20 queries each labelled with its relevant chunk ids, and 40 labelled answers (20 faithful paraphrases and 20 answers with fabricated claims, each citing the gold chunk).
-- **Retrieval metrics** (`src/metrics.js`): precision@k, recall@k and reciprocal rank, averaged per query. Any retriever plugs in by returning a ranked list of chunk ids per query (`scoreRetrieval`).
+- **Labelled set** (`data/data.json`): 22 chunks (the agent-05 knowledge base split into sentences), 20 queries each labelled with its relevant chunk ids, and 40 labelled answers (20 faithful paraphrases and 20 answers with fabricated claims, each citing the gold chunk).
+- **Retrieval metrics** (`src/agent11/metrics.py` and `worker/src/metrics.rs`): precision@k, recall@k and reciprocal rank, averaged per query. Any retriever plugs in by returning a ranked list of chunk ids per query (`scoreRetrieval`).
 - **Faithfulness metric**: citation overlap is the share of an answer's content tokens (stopwords removed, light stemming) found in the chunks it cites. It is validated against the 40 labels with ROC AUC and accuracy at a fixed threshold of 0.5, which was chosen before scoring and not tuned.
 - **LLM judge**: Llama 3.3 70B on Workers AI answers SUPPORTED or UNSUPPORTED for each answer against its cited sources.
 
 ## Architecture
 ```mermaid
 flowchart LR
-  L[(Labelled set<br/>22 chunks · 20 queries · 40 answers)] --> H[Harness<br/>src/harness.js]
+  L[(Labelled set<br/>22 chunks · 20 queries · 40 answers)] --> H[Harness<br/>src/agent11/harness.py + worker/src/harness.rs]
   subgraph Retrievers
     B[BM25<br/>live in the Worker]
     E[MiniLM / BGE-small / BGE-base<br/>offline on CPU]
@@ -33,7 +33,7 @@ flowchart LR
 ```
 
 ## Eval results
-All numbers are measured. They come from `node evals/run.mjs` and `evals/offline_embed.py`, were run on Oct 27, 2026, and are recorded in [`evals/results.json`](evals/results.json).
+All numbers are measured. They come from `python3 evals/run.py` and `evals/offline_embed.py`, were run on Oct 27, 2026, and are recorded in [`evals/results.json`](evals/results.json).
 
 **Retrieval** (20 queries; 19 have one relevant chunk and 1 has two, so precision@3 can reach at most about 0.35):
 
@@ -59,28 +59,35 @@ Known weakness: the 6 errors are all unfaithful answers that reuse many source w
 
 **Not yet run:** the LLM-judge column. The Workers AI free daily allocation was used up on Oct 27, 2026, and the live endpoint currently returns error `4006`. Rerun it after the daily reset:
 ```bash
-BASE=https://agent-11-rag-eval-harness.braylo777.workers.dev node evals/judge.mjs   # 40 calls, ~9 min (5 req/min limit)
+BASE=https://agent-11-rag-eval-harness.braylo777.workers.dev python3 evals/judge.py   # 40 calls, ~9 min (5 req/min limit)
 ```
 
 ## Tests
-12 offline unit tests (`node:test`, Workers AI mocked) cover:
+Python: 7 test functions; Rust: 3 test functions (Workers AI mocked). They cover:
 - precision, recall and reciprocal-rank math and edge cases
 - AUC with ties, tokenizing, and citation-overlap bounds
 - BM25 ranking, and labelled-set integrity
 - an oracle retriever scoring perfect, and deterministic results
 - parsing the judge's replies, HTTP validation, and a judge failure being reported instead of crashing
 
+The old JavaScript, the Python and the Rust code agree on tokens, every BM25 score, rankings, retrieval metrics and both faithfulness runs (thresholds 0.5 and 0.3). Re-running the offline harness in Python reproduced the stored `evals/results.json` metrics exactly.
+
 ```bash
-npm test
+python3 -m pytest
+cd worker && cargo test
 ```
 
 ## Run it
 ```bash
-npm test                                   # unit tests (Node 20+)
-node evals/run.mjs                         # BM25 + citation overlap, writes evals/results.json
-pip install sentence-transformers && python evals/offline_embed.py   # dense retrievers on CPU
-npx wrangler deploy                        # free tier
+python3 -m pytest                          # Python tests
+cd worker && cargo test                    # Rust tests
+cd worker && worker-build --release        # build the Worker (wasm)
+python3 evals/run.py                       # BM25 + citation overlap, writes evals/results.json
+pip install sentence-transformers && python3 evals/offline_embed.py   # dense retrievers on CPU, writes data/offline.json
+wrangler deploy                            # free tier
 ```
+
+The previous JavaScript version is on the `legacy-js` branch and the `pre-pycrust` tag.
 
 ## API
 - `GET /api/eval`: live BM25 metrics, citation-overlap metrics and the stored offline results
@@ -88,18 +95,3 @@ npx wrangler deploy                        # free tier
 - `POST /api/score` `{answer, cites:[chunkId]}`: citation overlap. Add `?judge=1` to also get the LLM judge's verdict (rate limited to 5 requests/min)
 
 MIT licensed.
-
-## How to run
-
-```bash
-npm install   # dev deps only
-npm test      # 16 offline tests, no Workers AI calls
-npm run dev   # local wrangler dev
-```
-
-## Test results (2026-10-27)
-
-| Suite | Tests | Status |
-|---|---|---|
-| Unit + edge cases (test/edge.test.js added) | 12→16 | all pass |
-| Live demo https://agent-11-rag-eval-harness.braylo777.workers.dev | HTTP 200 | verified 2026-10-27 |

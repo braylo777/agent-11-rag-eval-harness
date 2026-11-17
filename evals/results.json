@@ -1,6 +1,6 @@
 {
   "project": "agent-11-rag-eval-harness",
-  "run_at": "2026-10-28T00:56:33.886Z",
+  "run_at": "2026-11-17T15:37:00.798Z",
   "dataset": {
     "chunks": 22,
     "queries": 20,
@@ -12,9 +12,9 @@
       "precision@1": 0.9,
       "recall@1": 0.875,
       "precision@3": 0.35,
-      "recall@3": 1,
+      "recall@3": 1.0,
       "precision@5": 0.21,
-      "recall@5": 1,
+      "recall@5": 1.0,
       "mrr": 0.95
     },
     "all-MiniLM-L6-v2": {
@@ -34,11 +34,11 @@
       "precision@1": 0.9,
       "recall@1": 0.875,
       "precision@3": 0.35,
-      "recall@3": 1,
+      "recall@3": 1.0,
       "precision@5": 0.21,
-      "recall@5": 1,
+      "recall@5": 1.0,
       "mrr": 0.95,
-      "query_embed_ms_mean": 4,
+      "query_embed_ms_mean": 4.0,
       "hf_id": "BAAI/bge-small-en-v1.5"
     },
     "bge-base-en-v1.5": {
@@ -46,11 +46,11 @@
       "precision@1": 0.9,
       "recall@1": 0.875,
       "precision@3": 0.35,
-      "recall@3": 1,
+      "recall@3": 1.0,
       "precision@5": 0.21,
-      "recall@5": 1,
+      "recall@5": 1.0,
       "mrr": 0.95,
-      "query_embed_ms_mean": 9,
+      "query_embed_ms_mean": 9.0,
       "hf_id": "BAAI/bge-base-en-v1.5"
     }
   },
@@ -61,7 +61,7 @@
       "auc": 0.989,
       "accuracy": 0.85,
       "precision": 0.769,
-      "recall": 1,
+      "recall": 1.0,
       "mean_overlap_faithful": 0.866,
       "mean_overlap_unfaithful": 0.379,
       "rows": [
@@ -90,7 +90,7 @@
             "d1c2"
           ],
           "label": 1,
-          "overlap": 1
+          "overlap": 1.0
         },
         {
           "qid": "q2",
@@ -162,7 +162,7 @@
             "d4c1"
           ],
           "label": 1,
-          "overlap": 1
+          "overlap": 1.0
         },
         {
           "qid": "q6",
@@ -236,7 +236,7 @@
             "d6c2"
           ],
           "label": 1,
-          "overlap": 1
+          "overlap": 1.0
         },
         {
           "qid": "q10",
@@ -254,7 +254,7 @@
             "d7c1"
           ],
           "label": 1,
-          "overlap": 1
+          "overlap": 1.0
         },
         {
           "qid": "q11",
@@ -290,7 +290,7 @@
             "d8c2"
           ],
           "label": 1,
-          "overlap": 1
+          "overlap": 1.0
         },
         {
           "qid": "q13",
@@ -344,7 +344,7 @@
             "d9c2"
           ],
           "label": 1,
-          "overlap": 1
+          "overlap": 1.0
         },
         {
           "qid": "q16",
@@ -362,7 +362,7 @@
             "d10c1"
           ],
           "label": 1,
-          "overlap": 1
+          "overlap": 1.0
         },
         {
           "qid": "q17",

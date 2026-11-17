@@ -1,2 +1,7 @@
-node_modules/
+__pycache__/
+.pytest_cache/
+target/
+build/
 .wrangler/
+.dev.vars
+*.pyc
